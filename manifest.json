@@ -1,0 +1,100 @@
+{
+  "manifest_version": "0.1",
+  "name": "linux-filesystem",
+  "display_name": "Linux Filesystem",
+  "version": "1.1.0",
+  "description": "Enhanced filesystem access for Linux with support for symlinks, permissions, and Linux-specific features",
+  "long_description": "A comprehensive MCP server providing secure filesystem operations on Linux with advanced features including symbolic link management, permission control via chmod, detailed file information (UID/GID, permissions), and directory access controls. Optimized specifically for Linux environments.",
+  "author": {
+    "name": "Robert Hamilton",
+    "email": "robert@rghsoftware.com"
+  },
+  "server": {
+    "type": "node",
+    "entry_point": "build/index.js",
+    "mcp_config": {
+      "command": "node",
+      "args": [
+        "${__dirname}/build/index.js",
+        "${...user_config.allowed_directories}"
+      ],
+      "env": {}
+    }
+  },
+  "tools": [
+    {
+      "name": "read_file",
+      "description": "Read the complete contents of a file from the filesystem"
+    },
+    {
+      "name": "write_file",
+      "description": "Write content to a file, creating it if it doesn't exist"
+    },
+    {
+      "name": "create_directory",
+      "description": "Create a new directory or ensure a directory exists"
+    },
+    {
+      "name": "list_directory",
+      "description": "List all files and directories in a specified path"
+    },
+    {
+      "name": "move_file",
+      "description": "Move or rename files and directories"
+    },
+    {
+      "name": "delete_file",
+      "description": "Delete a file or empty directory"
+    },
+    {
+      "name": "get_file_info",
+      "description": "Get detailed information about a file or directory including permissions and ownership"
+    },
+    {
+      "name": "search_files",
+      "description": "Search for files matching a pattern in a directory"
+    },
+    {
+      "name": "create_symlink",
+      "description": "Create a symbolic link (Linux-specific)"
+    },
+    {
+      "name": "read_symlink",
+      "description": "Read the target of a symbolic link (Linux-specific)"
+    },
+    {
+      "name": "chmod",
+      "description": "Change file permissions (Linux-specific)"
+    }
+  ],
+  "keywords": [
+    "filesystem",
+    "files",
+    "linux",
+    "symlinks",
+    "permissions",
+    "chmod",
+    "directory"
+  ],
+  "license": "MIT",
+  "user_config": {
+    "allowed_directories": {
+      "type": "array",
+      "title": "Allowed Directories",
+      "description": "Directories the server can access. The server will have read/write access to all files and subdirectories within these paths.",
+      "required": true,
+      "minItems": 1,
+      "items": {
+        "type": "directory",
+        "title": "Directory Path"
+      }
+    }
+  },
+  "compatibility": {
+    "claude_desktop": ">=0.7.0",
+    "platforms": ["linux"],
+    "runtimes": {
+      "node": ">=18.0.0"
+    }
+  }
+}

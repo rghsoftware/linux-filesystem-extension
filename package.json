@@ -1,0 +1,29 @@
+{
+	"name": "linux-filesystem-mcp",
+	"version": "1.1.0",
+	"description": "Enhanced MCP filesystem server for Linux",
+	"main": "build/index.js",
+	"type": "module",
+	"scripts": {
+		"build": "tsc && node scripts/copy-node-modules.js",
+		"dev": "tsc --watch",
+		"prepare": "npm run build",
+		"pack-mcpb": "node scripts/pack-mcpb.js"
+	},
+	"keywords": [
+		"mcp",
+		"filesystem",
+		"linux",
+		"claude"
+	],
+	"author": "Robert Hamilton",
+	"license": "MIT",
+	"dependencies": {
+		"@modelcontextprotocol/sdk": "^1.0.4"
+	},
+	"devDependencies": {
+		"@types/node": "^22.10.2",
+		"archiver": "^7.0.1",
+		"typescript": "^5.7.2"
+	}
+}
