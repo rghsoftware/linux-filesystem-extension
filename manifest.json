@@ -2,7 +2,7 @@
   "manifest_version": "0.1",
   "name": "linux-filesystem",
   "display_name": "Linux Filesystem",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Enhanced filesystem access for Linux with support for symlinks, permissions, and Linux-specific features",
   "long_description": "A comprehensive MCP server providing secure filesystem operations on Linux with advanced features including symbolic link management, permission control via chmod, detailed file information (UID/GID, permissions), and directory access controls. Optimized specifically for Linux environments.",
   "author": {
@@ -16,55 +16,54 @@
       "command": "node",
       "args": [
         "${__dirname}/build/index.js",
-        "${...user_config.allowed_directories}"
-      ],
-      "env": {}
+        "${user_config.allowed_directories}"
+      ]
     }
   },
   "tools": [
     {
       "name": "read_file",
-      "description": "Read the complete contents of a file from the filesystem"
+      "description": "Read file contents with Linux-specific features (symlink handling, permission checking)"
     },
     {
       "name": "write_file",
-      "description": "Write content to a file, creating it if it doesn't exist"
+      "description": "Write files with Linux permission preservation and symlink awareness"
     },
     {
       "name": "create_directory",
-      "description": "Create a new directory or ensure a directory exists"
+      "description": "Create directories with Linux-specific permission control"
     },
     {
       "name": "list_directory",
-      "description": "List all files and directories in a specified path"
+      "description": "List directory contents with detailed Linux metadata (permissions, ownership, symlinks)"
     },
     {
       "name": "move_file",
-      "description": "Move or rename files and directories"
+      "description": "Move/rename files while preserving Linux permissions and handling symlinks"
     },
     {
       "name": "delete_file",
-      "description": "Delete a file or empty directory"
+      "description": "Safely delete files with Linux permission checks"
     },
     {
       "name": "get_file_info",
-      "description": "Get detailed information about a file or directory including permissions and ownership"
+      "description": "Get detailed Linux file metadata: UID/GID, permissions (octal/symbolic), file type, symlink target"
     },
     {
       "name": "search_files",
-      "description": "Search for files matching a pattern in a directory"
+      "description": "Search files with Linux-specific features: respect symlinks, hidden files, permissions"
     },
     {
       "name": "create_symlink",
-      "description": "Create a symbolic link (Linux-specific)"
+      "description": "Create symbolic links (Linux-specific feature not available in other filesystem tools)"
     },
     {
       "name": "read_symlink",
-      "description": "Read the target of a symbolic link (Linux-specific)"
+      "description": "Read symlink targets (Linux-specific feature not available in other filesystem tools)"
     },
     {
       "name": "chmod",
-      "description": "Change file permissions (Linux-specific)"
+      "description": "Change file/directory permissions using chmod (Linux-specific, not available in other tools)"
     }
   ],
   "keywords": [
@@ -79,15 +78,12 @@
   "license": "MIT",
   "user_config": {
     "allowed_directories": {
-      "type": "array",
+      "type": "directory",
       "title": "Allowed Directories",
-      "description": "Directories the server can access. The server will have read/write access to all files and subdirectories within these paths.",
+      "description": "Select directories the filesystem server can access",
+      "multiple": true,
       "required": true,
-      "minItems": 1,
-      "items": {
-        "type": "directory",
-        "title": "Directory Path"
-      }
+      "default": []
     }
   },
   "compatibility": {

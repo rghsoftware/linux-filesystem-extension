@@ -19,10 +19,10 @@
    - Navigate to and select: `dist/linux-filesystem.mcpb`
 
 4. **Configure Allowed Directories**
-   - When prompted, add one or more directories the extension should access
-   - Click "Add Directory" to include multiple locations
+   - When prompted, select one or more directories the extension should access
+   - The directory picker supports multiple selections
    - Examples: `/home/user/documents`, `/home/user/workspace`, `/home/user/projects`
-   - Each directory can be added, removed, or modified in the extension settings
+   - Directories can be added, removed, or modified later in extension settings
 
 ### Option 2: Manual Configuration
 

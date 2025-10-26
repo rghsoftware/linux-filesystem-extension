@@ -37,10 +37,41 @@ function parseConfig(): Config {
 
   // Parse from environment variables if available
   if (process.env.MCP_ALLOWED_DIRS) {
-    const dirs = process.env.MCP_ALLOWED_DIRS.split(":");
+    const envValue = process.env.MCP_ALLOWED_DIRS.trim();
+    let dirs: string[] = [];
+
+    // Try parsing as JSON array first
+    if (envValue.startsWith('[')) {
+      try {
+        const parsed = JSON.parse(envValue);
+        if (Array.isArray(parsed)) {
+          dirs = parsed;
+        }
+      } catch {
+        // Not valid JSON, fall through to other formats
+      }
+    }
+
+    // If not JSON array, try colon-separated (Unix standard)
+    if (dirs.length === 0 && envValue.includes(':')) {
+      dirs = envValue.split(':');
+    }
+
+    // If not colon-separated, try comma-separated
+    if (dirs.length === 0 && envValue.includes(',')) {
+      dirs = envValue.split(',');
+    }
+
+    // If still no separator found, treat as single directory
+    if (dirs.length === 0) {
+      dirs = [envValue];
+    }
+
+    // Process each directory
     for (const dir of dirs) {
-      if (existsSync(dir) && statSync(dir).isDirectory()) {
-        config.allowedDirectories.push(path.resolve(dir));
+      const trimmedDir = dir.trim();
+      if (trimmedDir && existsSync(trimmedDir) && statSync(trimmedDir).isDirectory()) {
+        config.allowedDirectories.push(path.resolve(trimmedDir));
       }
     }
   }
@@ -83,7 +114,7 @@ const server = new Server(
 const tools: Tool[] = [
   {
     name: "read_file",
-    description: "Read the complete contents of a file from the filesystem",
+    description: "Read file contents with Linux-specific features (symlink handling, permission checking)",
     inputSchema: {
       type: "object",
       properties: {
@@ -97,7 +128,7 @@ const tools: Tool[] = [
   },
   {
     name: "write_file",
-    description: "Write content to a file, creating it if it doesn't exist",
+    description: "Write files with Linux permission preservation and symlink awareness",
     inputSchema: {
       type: "object",
       properties: {
@@ -115,7 +146,7 @@ const tools: Tool[] = [
   },
   {
     name: "create_directory",
-    description: "Create a new directory or ensure a directory exists",
+    description: "Create directories with Linux-specific permission control",
     inputSchema: {
       type: "object",
       properties: {
@@ -129,7 +160,7 @@ const tools: Tool[] = [
   },
   {
     name: "list_directory",
-    description: "List all files and directories in a specified path",
+    description: "List directory contents with detailed Linux metadata (permissions, ownership, symlinks)",
     inputSchema: {
       type: "object",
       properties: {
@@ -143,7 +174,7 @@ const tools: Tool[] = [
   },
   {
     name: "move_file",
-    description: "Move or rename files and directories",
+    description: "Move/rename files while preserving Linux permissions and handling symlinks",
     inputSchema: {
       type: "object",
       properties: {
@@ -161,7 +192,7 @@ const tools: Tool[] = [
   },
   {
     name: "delete_file",
-    description: "Delete a file or empty directory",
+    description: "Safely delete files with Linux permission checks",
     inputSchema: {
       type: "object",
       properties: {
@@ -175,7 +206,7 @@ const tools: Tool[] = [
   },
   {
     name: "get_file_info",
-    description: "Get detailed information about a file or directory including permissions and ownership",
+    description: "Get detailed Linux file metadata: UID/GID, permissions (octal/symbolic), file type, symlink target",
     inputSchema: {
       type: "object",
       properties: {
@@ -189,7 +220,7 @@ const tools: Tool[] = [
   },
   {
     name: "search_files",
-    description: "Search for files matching a pattern in a directory",
+    description: "Search files with Linux-specific features: respect symlinks, hidden files, permissions",
     inputSchema: {
       type: "object",
       properties: {
@@ -207,7 +238,7 @@ const tools: Tool[] = [
   },
   {
     name: "create_symlink",
-    description: "Create a symbolic link (Linux-specific)",
+    description: "Create symbolic links (Linux-specific feature not available in other filesystem tools)",
     inputSchema: {
       type: "object",
       properties: {
@@ -225,7 +256,7 @@ const tools: Tool[] = [
   },
   {
     name: "read_symlink",
-    description: "Read the target of a symbolic link (Linux-specific)",
+    description: "Read symlink targets (Linux-specific feature not available in other filesystem tools)",
     inputSchema: {
       type: "object",
       properties: {
@@ -239,7 +270,7 @@ const tools: Tool[] = [
   },
   {
     name: "chmod",
-    description: "Change file permissions (Linux-specific)",
+    description: "Change file/directory permissions using chmod (Linux-specific, not available in other tools)",
     inputSchema: {
       type: "object",
       properties: {
@@ -519,9 +550,28 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 // Start the server
 async function main() {
   if (config.allowedDirectories.length === 0) {
-    console.error(
-      "Error: No allowed directories specified. Please provide directories as command-line arguments or set MCP_ALLOWED_DIRS environment variable."
-    );
+    console.error("\n" + "=".repeat(80));
+    console.error("❌ CONFIGURATION ERROR: No Allowed Directories");
+    console.error("=".repeat(80));
+    console.error("");
+    console.error("The Linux Filesystem extension needs at least one directory to access.");
+    console.error("");
+    console.error("📍 HOW TO FIX:");
+    console.error("   1. Open Claude Desktop Settings → Extensions");
+    console.error("   2. Find 'Linux Filesystem' in the list");
+    console.error("   3. Click 'Configure' or 'Settings'");
+    console.error("   4. Add one or more directories in the 'Allowed Directories' field");
+    console.error("   5. Click 'Save' and restart Claude Desktop");
+    console.error("");
+    console.error("🔍 DEBUG INFO:");
+    console.error("   • Command-line args:", process.argv.slice(2));
+    console.error("   • MCP_ALLOWED_DIRS env:", process.env.MCP_ALLOWED_DIRS || "(not set)");
+    console.error("");
+    console.error("💡 TIP: If you've already configured directories, try:");
+    console.error("   • Restart Claude Desktop completely");
+    console.error("   • Uninstall and reinstall the extension");
+    console.error("   • Check the extension was installed from the latest .mcpb file");
+    console.error("=".repeat(80) + "\n");
     process.exit(1);
   }
 

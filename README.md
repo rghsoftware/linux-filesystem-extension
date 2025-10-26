@@ -265,6 +265,41 @@ node build/index.js /path/to/allowed/dir
 - Verify the .mcpb file isn't corrupted
 - Check that Node.js is installed on your system
 
+## FAQ
+
+### Why doesn't Claude automatically use my filesystem extension?
+
+**Fixed in v1.1.0!** Previous versions had generic tool descriptions that didn't help Claude recognize when to use filesystem operations.
+
+**What was wrong (v1.0.x):**
+- Tool descriptions were too generic: "Read the complete contents of a file"
+- Claude didn't know filesystem capabilities were available
+- Would say "I can't access files" even with extension installed
+
+**What's fixed (v1.1.0+):**
+- All tool descriptions now emphasize Linux-specific features
+- Examples: "Read file contents with Linux-specific features (symlink handling, permission checking)"
+- Claude should now automatically recognize filesystem capabilities are available
+
+**If you still have issues after updating to v1.1.0:**
+
+1. **Multiple filesystem servers installed?**
+   - Check Settings → Extensions for other filesystem MCP servers
+   - If you have multiple, Claude may pick a different one
+   - Solution: Disable competing servers or specify which to use
+
+2. **Use trigger phrases** to hint at Linux features:
+   - "Check the file **permissions** on..."
+   - "Create a **symlink** to..."
+   - "What's the **UID/GID** of..."
+   - "**chmod** this directory to 755"
+   - "List files with **detailed metadata**"
+
+3. **Specify explicitly** (always works):
+   ```
+   "Use the Linux Filesystem extension to read myfile.txt"
+   ```
+
 ## License
 
 MIT
