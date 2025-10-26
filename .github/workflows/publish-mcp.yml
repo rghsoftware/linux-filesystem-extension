@@ -1,0 +1,109 @@
+name: Publish MCP Server
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+  id-token: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build project
+        run: npm run build
+
+      - name: Create MCPB package
+        run: npm run pack-mcpb
+
+      - name: Calculate SHA-256 hash
+        id: hash
+        run: |
+          HASH=$(sha256sum dist/linux-filesystem.mcpb | awk '{print $1}')
+          echo "sha256=$HASH" >> $GITHUB_OUTPUT
+          echo "✓ SHA-256: $HASH"
+
+      - name: Extract version from tag
+        id: version
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/v}
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "✓ Version: $VERSION"
+
+      - name: Update server.json with version and hash
+        run: |
+          # Update version, download URL, and SHA-256 hash
+          jq --arg version "${{ steps.version.outputs.version }}" \
+             --arg url "https://github.com/rghsoftware/linux-filesystem-extension/releases/download/${{ github.ref_name }}/linux-filesystem.mcpb" \
+             --arg sha "${{ steps.hash.outputs.sha256 }}" \
+             '.version = $version | .packages[0].identifier = $url | .packages[0].fileSha256 = $sha' \
+             server.json > server.json.tmp
+          mv server.json.tmp server.json
+          echo "✓ Updated server.json:"
+          cat server.json
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/linux-filesystem.mcpb
+            server.json
+          body: |
+            ## MCP Server Release ${{ steps.version.outputs.version }}
+
+            Enhanced filesystem access for Linux with support for symlinks, permissions, and Linux-specific features.
+
+            ### Installation
+
+            **Via MCP Registry:**
+            ```bash
+            # Coming soon - will be available after registry publication
+            ```
+
+            **Manual Installation:**
+            1. Download `linux-filesystem.mcpb` from this release
+            2. Open Claude Desktop → Settings → Extensions
+            3. Click "Install Extension..." and select the downloaded file
+
+            ### Package Details
+            - **SHA-256**: `${{ steps.hash.outputs.sha256 }}`
+            - **Size**: $(du -h dist/linux-filesystem.mcpb | cut -f1)
+
+            ### What's New
+            See [CHANGELOG.md](https://github.com/rghsoftware/linux-filesystem-extension/blob/main/CHANGELOG.md) for details.
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install MCP Publisher
+        run: |
+          curl -L -o mcp-publisher https://github.com/modelcontextprotocol/registry/releases/latest/download/mcp-publisher-linux-amd64
+          chmod +x mcp-publisher
+          ./mcp-publisher --version
+
+      - name: Login to MCP Registry
+        run: ./mcp-publisher login github-oidc
+
+      - name: Publish to MCP Registry
+        run: |
+          ./mcp-publisher publish
+          echo "✓ Published to MCP Registry"
+
+      - name: Verify publication
+        run: |
+          echo "Verify at: https://registry.modelcontextprotocol.io/v0/servers?search=io.github.rghsoftware/linux-filesystem"

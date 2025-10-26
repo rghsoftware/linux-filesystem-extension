@@ -1,0 +1,77 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-10-17/server.schema.json",
+  "name": "io.github.rghsoftware/linux-filesystem",
+  "title": "Linux Filesystem",
+  "description": "Enhanced Linux filesystem access with symlinks, permissions, and chmod support",
+  "version": "1.1.1",
+  "license": "MIT",
+  "homepage": "https://github.com/rghsoftware/linux-filesystem-extension",
+  "documentation": "https://github.com/rghsoftware/linux-filesystem-extension#readme",
+  "packages": [
+    {
+      "registryType": "mcpb",
+      "identifier": "https://github.com/rghsoftware/linux-filesystem-extension/releases/download/v1.1.1/linux-filesystem.mcpb",
+      "fileSha256": "0000000000000000000000000000000000000000000000000000000000000000",
+      "transport": {
+        "type": "stdio"
+      }
+    }
+  ],
+  "capabilities": {
+    "tools": [
+      {
+        "name": "read_file",
+        "description": "Read file contents with Linux-specific features (symlink handling, permission checking)"
+      },
+      {
+        "name": "write_file",
+        "description": "Write files with Linux permission preservation and symlink awareness"
+      },
+      {
+        "name": "create_directory",
+        "description": "Create directories with Linux-specific permission control"
+      },
+      {
+        "name": "list_directory",
+        "description": "List directory contents with detailed Linux metadata (permissions, ownership, symlinks)"
+      },
+      {
+        "name": "move_file",
+        "description": "Move/rename files while preserving Linux permissions and handling symlinks"
+      },
+      {
+        "name": "delete_file",
+        "description": "Safely delete files with Linux permission checks"
+      },
+      {
+        "name": "get_file_info",
+        "description": "Get detailed Linux file metadata: UID/GID, permissions (octal/symbolic), file type, symlink target"
+      },
+      {
+        "name": "search_files",
+        "description": "Search files with Linux-specific features: respect symlinks, hidden files, permissions"
+      },
+      {
+        "name": "create_symlink",
+        "description": "Create symbolic links (Linux-specific feature)"
+      },
+      {
+        "name": "read_symlink",
+        "description": "Read symlink targets (Linux-specific feature)"
+      },
+      {
+        "name": "chmod",
+        "description": "Change file/directory permissions using chmod (Linux-specific)"
+      }
+    ]
+  },
+  "keywords": [
+    "filesystem",
+    "files",
+    "linux",
+    "symlinks",
+    "permissions",
+    "chmod",
+    "directory"
+  ]
+}
