@@ -2,7 +2,7 @@
   "manifest_version": "0.1",
   "name": "linux-filesystem",
   "display_name": "Linux Filesystem",
-  "version": "1.1.1",
+  "version": "1.2.0",
   "description": "Enhanced filesystem access for Linux with support for symlinks, permissions, and Linux-specific features",
   "long_description": "A comprehensive MCP server providing secure filesystem operations on Linux with advanced features including symbolic link management, permission control via chmod, detailed file information (UID/GID, permissions), and directory access controls. Optimized specifically for Linux environments.",
   "author": {
