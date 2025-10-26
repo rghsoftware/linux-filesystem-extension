@@ -1,4 +1,29 @@
-=31;OK# Changelog
+# Changelog
+
+## [1.1.1] - 2025-10-25
+
+### Added
+
+- **Documentation Enhancements**: Comprehensive FAQ section added to README
+  - Addresses common question: "Why doesn't Claude automatically use my filesystem extension?"
+  - Explains what was fixed in v1.1.0 regarding tool descriptions
+  - Provides troubleshooting tips for multiple filesystem servers
+  - Includes trigger phrases to help Claude recognize Linux features
+  - Shows explicit usage examples
+
+### Fixed
+
+- **Environment Variable Parsing**: Enhanced `MCP_ALLOWED_DIRS` parsing to support multiple formats
+  - Now supports JSON array format: `["dir1", "dir2"]`
+  - Supports colon-separated (Unix standard): `dir1:dir2`
+  - Supports comma-separated: `dir1,dir2`
+  - Falls back to single directory if no separators found
+  - More flexible configuration options for different deployment scenarios
+
+### Changed
+
+- Improved INSTALL.md wording for clarity
+- Better formatting throughout CHANGELOG for readability
 
 ## [1.1.0] - 2025-10-25
 
